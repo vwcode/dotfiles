@@ -1,0 +1,16 @@
+# provision.yml
+ 
+- name: debug docker host
+  hosts: docker
+  tasks:
+     - name: Re-create a redis container
+       docker_container:
+          name: myredis
+          image: redis
+          command: redis-server --appendonly yes
+          state: present
+          recreate: yes
+          exposed_ports:
+            - 6379
+          volumes_from:
+            - mydata

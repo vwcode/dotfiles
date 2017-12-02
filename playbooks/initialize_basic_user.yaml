@@ -1,0 +1,17 @@
+---
+- hosts: homenet
+  remote_user: root
+  vars:
+    NORMAL_USER_NAME: 'sadmin'
+  tasks:
+    - name: "Create a secondary, non-root user"
+      user: name={{ NORMAL_USER_NAME }}
+            password='$6$rounds=656000$o.8ZPBKzBIdgIcfp$d7VA29fPcYtbyrmHTsODgDB/k.pk4qS4z6j97Xfww1Pbw0uSgqimgM6owjUcf1M148J4Y9Avxkt97rpgyBoQ01'
+            shell=/bin/bash
+    - name: Add remote authorized key to allow future passwordless logins
+      authorized_key: user={{ NORMAL_USER_NAME }} key="{{ lookup('file', '/home/sadmin/.ssh/id_rsa.pub') }}"
+    - name: Add normal user to sudoers
+      lineinfile: dest=/etc/sudoers
+                  regexp="{{ NORMAL_USER_NAME }} ALL"
+                  line="{{ NORMAL_USER_NAME }} ALL=(ALL) ALL"
+                  state=present

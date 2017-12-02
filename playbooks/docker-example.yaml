@@ -1,0 +1,9 @@
+- hosts: linode
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  roles:
+    - role: mongrelion.docker
+      docker_config:
+        live-restore: true
+        userland-proxy: false

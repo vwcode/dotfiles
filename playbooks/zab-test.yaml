@@ -1,0 +1,8 @@
+---
+- hosts: linode
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Cat zab var
+      command: echo "{{ zabbix_name }}"

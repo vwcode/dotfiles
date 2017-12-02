@@ -1,0 +1,30 @@
+---
+- hosts: linode
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  tasks:
+    - copy: 
+         src: /home/ansible/files/graylog.conf 
+         dest: /etc/rsyslog.d
+
+    - name: Install graylog collector
+      yum: name=https://github.com/Graylog2/collector-sidecar/releases/download/0.1.4/collector-sidecar-0.1.4-1.x86_64.rpm
+      when: ansible_distribution == "CentOS"
+
+    - name: Install graylog collector
+      apt: 
+         deb: https://github.com/Graylog2/collector-sidecar/releases/download/0.1.4/collector-sidecar_0.1.4-1_amd64.deb
+      when: ansible_distribution == "Ubuntu"
+
+    - name: register the collector service
+      command: graylog-collector-sidecar -service install
+
+    - copy: 
+         src: /home/ansible/files/collector_sidecar.yml 
+         dest: /etc/graylog/collector-sidecar
+
+    - name: start collector
+      systemd:
+        name: collector-sidecar 
+        state: started
